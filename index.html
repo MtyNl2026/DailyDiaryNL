@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario Personal 2026</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        input[type="text"], input[type="password"], input[type="date"], input[type="time"], select, textarea {
+            width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+        }
+        textarea { height: 100px; resize: vertical; }
+        button { width: 100%; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #2980b9; }
+        .btn-secondary { background-color: #7f8c8d; }
+        .btn-secondary:hover { background-color: #95a5a6; }
+        .btn-success { background-color: #27ae60; }
+        .btn-success:hover { background-color: #219150; }
+        .hidden { display: none; }
+        .logout-btn { background-color: #e74c3c; margin-top: 0; width: auto; padding: 8px 15px; }
+        .logout-btn:hover { background-color: #c0392b; }
+        .form-group { margin-bottom: 15px; }
+        .row { display: flex; gap: 10px; }
+        .row > div { flex: 1; }
+        .entry-card { background: #f8f9fa; border-left: 4px solid #3498db; padding: 15px; margin-bottom: 15px; border-radius: 4px; position: relative; }
+        .entry-header { display: flex; justify-content: space-between; font-weight: bold; color: #555; margin-bottom: 5px; }
+        .entry-title { font-size: 16px; color: #2c3e50; margin: 5px 0; }
+        .entry-mood { background: #e1f5fe; color: #0288d1; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .entry-row-tag { font-size: 11px; color: #95a5a6; }
+        .nav-meses { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .nav-meses button { width: auto; padding: 8px 15px; font-size: 14px; background-color: #ecf0f1; color: #333; flex-shrink: 0; }
+        .nav-meses button.active { background-color: #2c3e50; color: white; }
+        .link-toggle { text-align: center; margin-top: 15px; color: #3498db; cursor: pointer; text-decoration: underline; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-section">
+        <h2>Diario Personal 2026</h2>
+        <p style="text-align:center; color:#666;">Ingrese sus credenciales de acceso</p>
+        <input type="text" id="usuario" placeholder="Usuario">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="login()">Iniciar Sesión</button>
+        <p class="link-toggle" onclick="mostrarRegistro()">¿No tienes cuenta? Regístrate aquí</p>
+    </div>
+
+    <!-- PANTALLA DE REGISTRO DE USUARIO -->
+    <div id="register-section" class="hidden">
+        <h2>Crear Cuenta Nueva</h2>
+        <p style="text-align:center; color:#666;">Complete los datos para registrarse</p>
+        <input type="text" id="reg-nombre" placeholder="Nombre Completo">
+        <input type="text" id="reg-usuario" placeholder="Nombre de Usuario">
+        <input type="password" id="reg-password" placeholder="Contraseña">
+        <button class="btn-success" onclick="registrarUsuario()">Registrar Cuenta</button>
+        <button class="btn-secondary" onclick="mostrarLogin()">Volver al Login</button>
+    </div>
+
+    <!-- PORTAL PRINCIPAL DEL DIARIO -->
+    <div id="portal-section" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h2 style="margin:0;">Bienvenido(a), <span id="nombre-usuario"></span></h2>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </div>
+
+        <!-- SELECCIÓN DE MESES -->
+        <div class="nav-meses" id="menu-meses">
+            <!-- Se generan dinámicamente con JS -->
+        </div>
+
+        <!-- FORMULARIO DE NUEVA ENTRADA -->
+        <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:25px; border:1px solid #eee;">
+            <h3 style="margin-top:0; color:#2c3e50;">Escribir Entrada Diaria</h3>
+            <div class="row">
+                <div>
+                    <label>Fecha:</label>
+                    <input type="date" id="input-fecha">
+                </div>
+                <div>
+                    <label>Hora:</label>
+                    <input type="time" id="input-hora">
+                </div>
+                <div>
+                    <label>Mood / Estado de Ánimo:</label>
+                    <select id="input-mood">
+                        <option value="😊 Feliz">😊 Feliz</option>
+                        <option value="😌 Tranquilo">😌 Tranquilo</option>
+                        <option value="🚀 Motivado">🚀 Motivado</option>
+                        <option value="😴 Cansado">😴 Cansado</option>
+                        <option value="😔 Triste">😔 Triste</option>
+                        <option value="🤯 Estresado">🤯 Estresado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="input-titulo" placeholder="Título o Idea Principal del Día">
+            </div>
+
+            <div class="form-group">
+                <textarea id="input-reflexion" placeholder="Reflexión / Notas del Día..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="input-gratitud" placeholder="Objetivos / Gratitud del Día">
+            </div>
+
+            <button class="btn-success" onclick="guardarEntrada()">Guardar Entrada</button>
+        </div>
+
+        <!-- HISTORIAL DE ENTRADAS DEL MES -->
+        <h3 style="color:#2c3e50;">Entradas de <span id="mes-actual-titulo">Enero</span></h3>
+        <div id="lista-entradas">
+            <p style="text-align:center; color:#888;">Cargando entradas...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // URL de tu Apps Script Web App
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfqBgRxqQW8z9d8XfCS-2oe-95nnUanoQAyDZ2iNOjwgmrujc4qHH2nynpPHeCWnQawA/exec"; 
+
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    let mesSeleccionado = meses[new Date().getMonth()];
+
+    function mostrarRegistro() {
+        document.getElementById("login-section").classList.add("hidden");
+        document.getElementById("register-section").classList.remove("hidden");
+    }
+
+    function mostrarLogin() {
+        document.getElementById("register-section").classList.add("hidden");
+        document.getElementById("login-section").classList.remove("hidden");
+    }
+
+    function login() {
+        const u = document.getElementById("usuario").value;
+        const p = document.getElementById("password").value;
+
+        if(!u || !p) return alert("Por favor llene todos los campos.");
+
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "login", usuario: u, password: p })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                document.getElementById("nombre-usuario").innerText = res.maestro;
+                document.getElementById("login-section").classList.add("hidden");
+                document.getElementById("portal-section").classList.remove("hidden");
+                inicializarMeses();
+                cargarMes(mesSeleccionado);
+            } else {
+                alert(res.message);
+            }
+        })
+        .catch(err => alert("Error de conexión: " + err));
+    }
+
+    function registrarUsuario() {
+        const nombreCompleto = document.getElementById("reg-nombre").value;
+        const nuevoUsuario = document.getElementById("reg-usuario").value;
+        const nuevaPassword = document.getElementById("reg-password").value;
+
+        if(!nombreCompleto || !nuevoUsuario || !nuevaPassword) {
+            return alert("Por favor complete todos los campos de registro.");
+        }
+
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "registerUser",
+                nombreCompleto: nombreCompleto,
+                nuevoUsuario: nuevoUsuario,
+                nuevaPassword: nuevaPassword
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                alert("¡Usuario registrado con éxito! Ahora puede iniciar sesión.");
+                document.getElementById("reg-nombre").value = "";
+                document.getElementById("reg-usuario").value = "";
+                document.getElementById("reg-password").value = "";
+                mostrarLogin();
+            } else {
+                alert("Error al registrar: " + res.message);
+            }
+        })
+        .catch(err => alert("Error de conexión: " + err));
+    }
+
+    function inicializarMeses() {
+        const nav = document.getElementById("menu-meses");
+        nav.innerHTML = "";
+        meses.forEach(mes => {
+            const btn = document.createElement("button");
+            btn.innerText = mes;
+            btn.id = "btn-" + mes;
+            if(mes === mesSeleccionado) btn.classList.add("active");
+            btn.onclick = () => seleccionarMes(mes);
+            nav.appendChild(btn);
+        });
+
+        // Establecer fecha y hora actual por defecto
+        document.getElementById("input-fecha").valueAsDate = new Date();
+        document.getElementById("input-hora").value = new Date().toTimeString().slice(0,5);
+    }
+
+    function seleccionarMes(mes) {
+        mesSeleccionado = mes;
+        meses.forEach(m => {
+            const btn = document.getElementById("btn-" + m);
+            if(btn) btn.classList.toggle("active", m === mes);
+        });
+        cargarMes(mes);
+    }
+
+    function cargarMes(mes) {
+        document.getElementById("mes-actual-titulo").innerText = mes;
+        const lista = document.getElementById("lista-entradas");
+        lista.innerHTML = "<p style='text-align:center; color:#888;'>Cargando entradas...</p>";
+
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getEntries", mes: mes })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                renderEntradas(res.entradas);
+            } else {
+                lista.innerHTML = `<p style="text-align:center; color:#e74c3c;">${res.message}</p>`;
+            }
+        })
+        .catch(err => alert("Error al cargar entradas: " + err));
+    }
+
+    function renderEntradas(entradas) {
+        const lista = document.getElementById("lista-entradas");
+        lista.innerHTML = "";
+
+        if(!entradas || entradas.length === 0) {
+            lista.innerHTML = "<p style='text-align:center; color:#888;'>No hay entradas registradas en este mes.</p>";
+            return;
+        }
+
+        entradas.slice().reverse().forEach(ent => {
+            let fechaStr = ent.fecha;
+            if(typeof ent.fecha === "string" && ent.fecha.includes("T")) {
+                fechaStr = ent.fecha.split("T")[0];
+            }
+
+            lista.innerHTML += `
+                <div class="entry-card">
+                    <div class="entry-header">
+                        <span>📅 ${fechaStr} - ⏰ ${ent.hora || ''}</span>
+                        <span class="entry-mood">${ent.mood || 'Normal'}</span>
+                    </div>
+                    <div class="entry-title"><strong>${ent.titulo || 'Sin título'}</strong></div>
+                    <p style="margin:8px 0; white-space: pre-line;">${ent.reflexion || ''}</p>
+                    ${ent.gratitud ? `<p style="margin:5px 0; font-style:italic; color:#27ae60; font-size:13px;">🌱 ${ent.gratitud}</p>` : ''}
+                    <div class="entry-row-tag">Fila en hoja: ${ent.row || '-'}</div>
+                </div>
+            `;
+        });
+    }
+
+    function guardarEntrada() {
+        const fecha = document.getElementById("input-fecha").value;
+        const hora = document.getElementById("input-hora").value;
+        const mood = document.getElementById("input-mood").value;
+        const titulo = document.getElementById("input-titulo").value;
+        const reflexion = document.getElementById("input-reflexion").value;
+        const gratitud = document.getElementById("input-gratitud").value;
+
+        if(!fecha || !reflexion) {
+            return alert("Por favor complete al menos la fecha y la reflexión.");
+        }
+
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "saveEntry",
+                mes: mesSeleccionado,
+                fecha: fecha,
+                hora: hora,
+                mood: mood,
+                titulo: titulo,
+                reflexion: reflexion,
+                gratitud: gratitud
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                alert("¡Entrada guardada con éxito!");
+                document.getElementById("input-titulo").value = "";
+                document.getElementById("input-reflexion").value = "";
+                document.getElementById("input-gratitud").value = "";
+                cargarMes(mesSeleccionado);
+            } else {
+                alert("Error al guardar: " + res.message);
+            }
+        })
+        .catch(err => alert("Error de conexión: " + err));
+    }
+
+    function logout() {
+        document.getElementById("usuario").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("login-section").classList.remove("hidden");
+        document.getElementById("portal-section").classList.add("hidden");
+    }
+</script>
+</body>
+</html>
